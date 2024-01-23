@@ -45,6 +45,7 @@ export default function CriarFichas() {
     if (selectedFile && nome.length >= 4) {
       let data = new FormData();
       data.set("nomeTipoFicha", nome);
+      data.set("file", selectedFile);
       console.log(data);
       const resposta = await fetch(
         "http://localhost:5000/api/criar-tipo-ficha",

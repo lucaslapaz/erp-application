@@ -18,9 +18,8 @@ router.post("/criar-tipo-ficha", validateToken, criarTipoFichaRoute);
 router.get(
   "/teste-erro",
   validateToken,
-  (req: Request & IRequestAuthenticate, res: Response, next: NextFunction) => {
-    console.log("dentro do teste");
-    res.send(req.authenticate);
+  (req: Request, res: Response, next: NextFunction) => {
+    throw new Error('seila')
   }
 );
 

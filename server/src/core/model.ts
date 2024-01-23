@@ -53,7 +53,7 @@ namespace model {
     try {
       return await conexao.execute(query, values);
     } catch (error: any) {
-      return new Error(error.message);
+      return error;
     } finally {
       conexao.release(); // Liberando a conexão de volta para o pool
     }
