@@ -67,11 +67,11 @@ export default function CriarFicha() {
     } catch (error) {
       let message = "";
       if (error instanceof ErrorCustom) {
+        message = "";
       } else {
+        message = "";
       }
-      setNotifyMessage(
-        message
-      );
+      setNotifyMessage(message);
       setNotifyStatus(true);
     }
   };

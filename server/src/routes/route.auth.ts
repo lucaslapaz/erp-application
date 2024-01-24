@@ -1,17 +1,16 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { loginModel, authenticateModel } from "../models/model.usuario";
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
-export async function loginRoute(req: Request, res: Response) {
+export async function loginRoute(req: Request, res: Response, next: NextFunction) {
   let { username, password } = req.body;
   username = username.trim();
 
   const resposta = await loginModel(username);
 
   if (resposta instanceof Error) {
-    console.log("falha ao consultar usuário");
-    return res.sendStatus(500);
+    return next(new Error("Usuário incorreto."))
   }
 
   const senha = resposta[0].password;
@@ -26,9 +25,9 @@ export async function loginRoute(req: Request, res: Response) {
       secure: true,
       sameSite: "none",
     });
-    return res.sendStatus(200);
+    return res.status(200).json({message: "Usuário logado com sucesso."});
   } else {
-    return res.status(500).send("Usuário incorreto.");
+    return next(new Error("Usuário incorreto."))
   }
 }
 

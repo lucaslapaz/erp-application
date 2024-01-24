@@ -10,41 +10,57 @@ import {
 } from "@mui/material";
 import { Navigate } from "react-router-dom";
 import { useState } from "react";
+import Notificacao from "../Components/Notificacao";
+import ErrorCustom from "../Objects/ErrorCustom";
 
 export default function Login() {
   const [username, setUsername] = useState("admin");
   const [password, setPassword] = useState("lapaz");
   const [requestSend, setRequestSend] = useState(false);
   const [redirect, setRedirect] = useState(false);
-  const [snackStatus, setSnackStatus] = useState(false);
+  const [notifyStatus, setNotifyStatus] = useState(false);
+  const [notifyMessage, setNotifyMessage] = useState();
 
   async function loginHandler() {
     let user = username.replaceAll(" ", "");
     if (user.length >= 5 && password.length >= 1) {
       setRequestSend(true);
-      const resposta = await fetch("http://localhost:5000/api/login", {
-        credentials: "include",
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username: user,
-          password,
-        }),
-      });
-      setRequestSend(false);
-      if (resposta.status === 200) {
-        setRedirect(true);
-      } else {
-        setSnackStatus(true);
+
+      try {
+        const resposta = await fetch("http://localhost:5000/api/login", {
+          credentials: "include",
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: user,
+            password,
+          }),
+        });
+        if (resposta.status === 200) {
+          setRedirect(true);
+        } else {
+          let message = await resposta.json();
+          throw new ErrorCustom(message.message);
+        }
+      } catch (error) {
+        let message = "";
+        if (error instanceof ErrorCustom) {
+          message = error.message;
+        } else {
+          message = "Falha ao tentar efetuar login.";
+        }
+        setNotifyMessage(message);
+        setNotifyStatus(true);
+      } finally {
+        setRequestSend(false);
       }
-      console.log(resposta.status);
     }
   }
 
   function closeSnackBar() {
-    setSnackStatus(false);
+    setNotifyStatus(false);
   }
 
   if (redirect) {
@@ -99,7 +115,7 @@ export default function Login() {
             Entrar
           </Button>
           <Snackbar
-            open={snackStatus}
+            open={notifyStatus}
             autoHideDuration={5000}
             onClose={closeSnackBar}
           >
@@ -107,6 +123,13 @@ export default function Login() {
               Usuário incorreto
             </Alert>
           </Snackbar>
+
+          <Notificacao
+            open={notifyStatus}
+            onClose={closeSnackBar}
+            severity="error"
+            message={notifyMessage}
+          />
         </Stack>
       </Box>
     </>
