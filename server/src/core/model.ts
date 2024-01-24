@@ -59,12 +59,7 @@ namespace model {
     }
   }
 
-  export async function DBCreateMultiple(
-    _tabela: string,
-    _dados: object[],
-    _start: number,
-    _end: number
-  ) {
+  export async function DBCreateMultiple(_tabela: string, _dados: object[]) {
     if (!_tabela || !_dados || _dados.length <= 0)
       return new Error("Argumentos faltando!");
 
@@ -80,10 +75,11 @@ namespace model {
       values.push(Object.values(item));
     });
 
-    const query: string = `INSERT INTO ${_tabela} (${colunasString}) values (${params});`;
+
+    const query: string = `INSERT INTO ${_tabela} (${colunasString}) values ?`;
 
     try {
-      return await conexao.execute(query, values);
+      return await conexao.query(query, [values]);
     } catch (error: any) {
       return error;
     } finally {

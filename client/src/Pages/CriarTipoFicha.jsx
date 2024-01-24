@@ -3,6 +3,7 @@ import { Box, Button, Input, TextField } from "@mui/material";
 import { useState } from "react";
 import Notificacao from "../Components/Notificacao";
 import ErrorCustom from "../Objects/ErrorCustom";
+import { API_URL } from "../Config";
 
 const BoxFormulario = styled(Box)(({ theme }) => {
   return {
@@ -49,16 +50,16 @@ export default function CriarTipoFicha() {
   };
 
   const handleUpload = async () => {
-    const nome = nomeTipoFicha.replaceAll(" ", "");
+    const nome = nomeTipoFicha.trim();
 
     try {
-      if (selectedFile && nome.length >= 4) {
+      if (selectedFile && nome.length >= 3) {
         let data = new FormData();
         data.set("nomeTipoFicha", nome);
         data.set("file", selectedFile);
         console.log(data);
         const resposta = await fetch(
-          "http://localhost:5000/api/criar-tipo-ficha",
+          `${API_URL}/api/criar-tipo-ficha`,
           {
             credentials: "include",
             method: "POST",
@@ -77,7 +78,7 @@ export default function CriarTipoFicha() {
         setNotificationMessage(respostaJson.message);
         setNotificationStatus(true);
       } else {
-        throw new ErrorCustom("Nenhum arquivo selecionado.");
+        throw new ErrorCustom("Nenhuma arquivo de imagem selecionado.");
       }
     } catch (error) {
       setNotificationSeverity("error");
@@ -87,7 +88,7 @@ export default function CriarTipoFicha() {
         message = error.message;
       } else {
         message =
-          "Erro ao carregar lista de tipo de fichas. Tente novamente mais tarde.";
+          "Falha ao se comunicar com o servidor.";
       }
       setNotificationMessage(message);
       setNotificationStatus(true);

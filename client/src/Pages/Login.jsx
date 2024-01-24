@@ -12,6 +12,7 @@ import { Navigate } from "react-router-dom";
 import { useState } from "react";
 import Notificacao from "../Components/Notificacao";
 import ErrorCustom from "../Objects/ErrorCustom";
+import { API_URL } from "../Config";
 
 export default function Login() {
   const [username, setUsername] = useState("admin");
@@ -27,7 +28,7 @@ export default function Login() {
       setRequestSend(true);
 
       try {
-        const resposta = await fetch("http://localhost:5000/api/login", {
+        const resposta = await fetch(`${API_URL}/api/login`, {
           credentials: "include",
           method: "POST",
           headers: {

@@ -4,7 +4,7 @@ const http = require("http");
 const socketIo = require("socket.io");
 const cors = require("cors");
 const routes = require("./core/router");
-const errorHandler = require("./core/error");
+const errorHandler = require("./core/errorHandler");
 const cookieParser = require("cookie-parser");
 
 const app = express();

@@ -3,14 +3,18 @@ import { loginModel, authenticateModel } from "../models/model.usuario";
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
-export async function loginRoute(req: Request, res: Response, next: NextFunction) {
+export async function loginRoute(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   let { username, password } = req.body;
   username = username.trim();
 
   const resposta = await loginModel(username);
 
   if (resposta instanceof Error) {
-    return next(new Error("Usuário incorreto."))
+    return next(new Error("Usuário incorreto."));
   }
 
   const senha = resposta[0].password;
@@ -25,36 +29,39 @@ export async function loginRoute(req: Request, res: Response, next: NextFunction
       secure: true,
       sameSite: "none",
     });
-    return res.status(200).json({message: "Usuário logado com sucesso."});
+    return res.status(200).json({ message: "Usuário logado com sucesso." });
   } else {
-    return next(new Error("Usuário incorreto."))
+    return next(new Error("Usuário incorreto."));
   }
 }
 
 export async function logoutRoute(req: Request, res: Response) {
   return res
     .cookie("auth_token", "", { sameSite: "none", secure: true, maxAge: -1 })
-    .sendStatus(200);
+    .status(200)
+    .json({ message: "Usuário deslogado com sucesso." });
 }
 
-export async function authenticateRoute(req: Request, res: Response) {
+export async function authenticateRoute(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   const { auth_token } = req.cookies;
 
-  if (!auth_token)
-    return res.status(500).json({ message: "Usuário não logado." });
+  if (!auth_token) return next(new Error("Usuário não logado."));
 
   try {
     const decoded = jwt.verify(auth_token, process.env.JWT_KEY);
-    let {idusuario, username} = decoded;
-    const resposta:any = await authenticateModel({ idusuario, username });
+    let { idusuario, username } = decoded;
+    const resposta: any = await authenticateModel({ idusuario, username });
 
-    if(resposta instanceof Error){
-      return res.status(500).json({message: resposta.message});
+    if (resposta instanceof Error) {
+      return next(resposta);
     }
-    return res.status(200).json({...resposta[0]})
-
+    return res.status(200).json({ ...resposta[0] });
   } catch (error: any) {
-    let message = "Erro ao autenticar usuário";
+    let message = "Erro ao autenticar usuário.";
     switch (error.name) {
       case "TokenExpiredError":
         message = "Token de sessão expirado.";
@@ -63,6 +70,6 @@ export async function authenticateRoute(req: Request, res: Response) {
         message = "Token de autenticação inválido.";
         break;
     }
-    return res.status(500).json({message});
+    return next(new Error(message));
   }
 }
