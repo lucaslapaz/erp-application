@@ -4,7 +4,7 @@ import IRequestAuthenticate from "../interfaces/IRequestAuthenticate";
 const jwt = require("jsonwebtoken");
 
 export default async function validateToken(
-  req: Request & IRequestAuthenticate,
+  req: Request & IRequestAuthenticate ,
   res: Response,
   next: NextFunction
 ) {
@@ -31,6 +31,6 @@ export default async function validateToken(
         message = "Token de autenticação inválido.";
         break;
     }
-    return res.status(500).json(message);
+    return res.status(500).json({message});
   }
 }

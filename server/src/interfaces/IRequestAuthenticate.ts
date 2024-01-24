@@ -1,5 +1,5 @@
 interface IRequestAuthenticate{
-    authenticate: object;
+    authenticate: IAuthenticate;
 }
 
 export default IRequestAuthenticate;

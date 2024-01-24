@@ -52,7 +52,7 @@ export async function authenticateRoute(req: Request, res: Response) {
     if(resposta instanceof Error){
       return res.status(500).json({message: resposta.message});
     }
-    return res.status(200).json(resposta[0])
+    return res.status(200).json({...resposta[0]})
 
   } catch (error: any) {
     let message = "Erro ao autenticar usuário";
@@ -64,6 +64,6 @@ export async function authenticateRoute(req: Request, res: Response) {
         message = "Token de autenticação inválido.";
         break;
     }
-    return res.status(500).json(message);
+    return res.status(500).json({message});
   }
 }

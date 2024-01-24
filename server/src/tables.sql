@@ -15,19 +15,19 @@ INSERT INTO
 VALUES
     (
         "admin",
-        "$2a$10$Ejbqi/IDNaZ7sCntKjC5XOxNsY5.x.Er7WQipz2bb0qtRLNBd7RLq",
+        "$2a$06$I5spfb2xJBOJ77mmctF71ehOb8OXAys5lUIgb9MzwkFki8rtSSlni",
         10
     ),
     -- lapaz
     (
         "lucaslapaz",
-        "$2a$10$8dMh5cbflvikcPyi5.YenuYsqDjePOjPD4g86K9OoDIjAsJor/rXC",
+        "$2a$06$EZXEMQYyiu64p33jZUIFmut.g5g9K/2VZ9ChHejtszZpHIiGsRo0S",
         5
     ),
     -- 123
     (
         "jorgebento",
-        "$2a$10$L81CaPmBCPvsxpskuSI1k.LQ8uJmqrP5JLMpFpzr6CbI4eO7cTHou",
+        "$2a$06$gR/y7rO9HbP6a7JZ2I6SW.ZNxeWgAKd49zekd/WFfl5U2R5mbnTP6",
         0
     );
 
@@ -66,7 +66,7 @@ CREATE TABLE FICHAS_TIPO(
     NOMEIMAGEM VARCHAR(300) NOT NULL,
     PATHIMAGEM VARCHAR(300) NOT NULL UNIQUE,
     FORMATO VARCHAR(10) NOT NULL,
-    NOMEFICHA VARCHAR(40) NOT NULL UNIQUE,
+    NOMETIPOFICHA VARCHAR(40) NOT NULL UNIQUE,
     PRIMARY KEY (IDTIPO)
 );
 
@@ -78,7 +78,8 @@ CREATE TABLE FICHAS (
     IDFICHA INT NOT NULL AUTO_INCREMENT,
     NUMERO INT NOT NULL,
     ID_TIPO INT NOT NULL,
-    FOREIGN KEY (IDFICHA) REFERENCES FICHAS_TIPO(IDTIPO)
+    PRIMARY KEY (IDFICHA),
+    FOREIGN KEY (ID_TIPO) REFERENCES FICHAS_TIPO(IDTIPO)
 );
 
 -------------------------------------------------------

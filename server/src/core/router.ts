@@ -4,9 +4,12 @@ import {
   logoutRoute,
   authenticateRoute,
 } from "../routes/route.auth";
-import { criarTipoFichaRoute } from "../routes/route.fichas";
+import {
+  criarTipoFichaRoute,
+  consultarTiposFichaRoute,
+  criarNovaFichaRoute,
+} from "../routes/route.fichas";
 import validateToken from "../core/validateToken";
-import IRequestAuthenticate from "../interfaces/IRequestAuthenticate";
 
 const router = require("express").Router();
 
@@ -14,12 +17,15 @@ router.post("/login", loginRoute);
 router.post("/logout", logoutRoute);
 router.post("/authenticate", authenticateRoute);
 router.post("/criar-tipo-ficha", validateToken, criarTipoFichaRoute);
+router.get("/consultar-tipos-ficha", validateToken, consultarTiposFichaRoute);
+
+router.post("/criar-ficha", validateToken, criarNovaFichaRoute);
 
 router.get(
   "/teste-erro",
   validateToken,
   (req: Request, res: Response, next: NextFunction) => {
-    throw new Error('seila')
+    throw new Error("seila");
   }
 );
 

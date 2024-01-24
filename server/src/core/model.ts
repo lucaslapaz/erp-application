@@ -38,7 +38,7 @@ namespace model {
    * @param {object} _dados Objeto com os dados a serem inseridos
    * @returns Retorna dados sobre a inserção na tabela
    */
-  export async function DbCreate(_tabela: string, _dados: object) {
+  export async function DBCreate(_tabela: string, _dados: object) {
     if (!_tabela || !_dados) return new Error("Argumentos faltando!");
 
     const conexao = await obterConexaoDoPool();
@@ -47,6 +47,38 @@ namespace model {
     const colunasString = colunas.join(", ");
     const params = colunas.map((item) => `?`).join(", ");
     const values = Object.values(_dados);
+
+    const query: string = `INSERT INTO ${_tabela} (${colunasString}) values (${params});`;
+
+    try {
+      return await conexao.execute(query, values);
+    } catch (error: any) {
+      return error;
+    } finally {
+      conexao.release(); // Liberando a conexão de volta para o pool
+    }
+  }
+
+  export async function DBCreateMultiple(
+    _tabela: string,
+    _dados: object[],
+    _start: number,
+    _end: number
+  ) {
+    if (!_tabela || !_dados || _dados.length <= 0)
+      return new Error("Argumentos faltando!");
+
+    const conexao = await obterConexaoDoPool();
+
+    const colunas = Object.keys(_dados[0]);
+    const colunasString = colunas.join(", ");
+    const params = colunas.map((item) => `?`).join(", ");
+
+    const values: any[] = [];
+
+    _dados.forEach((item) => {
+      values.push(Object.values(item));
+    });
 
     const query: string = `INSERT INTO ${_tabela} (${colunasString}) values (${params});`;
 
@@ -69,7 +101,7 @@ namespace model {
   export async function DbRead(
     _tabela: string,
     _colunas: string[],
-    _condicao: object
+    _condicao: object = {}
   ) {
     if (!_tabela || !_colunas || !_condicao)
       return new Error("Argumentos faltando!");
@@ -78,16 +110,24 @@ namespace model {
 
     let colunas: string = _colunas.join(", ");
 
-    const keysCondicao = Object.keys(_condicao).map((item) => `${item} = ?`);
-    const colunasCondicao = keysCondicao.join(" AND ");
-    const valuesCondicao = Object.values(_condicao);
+    let query: string = "";
 
-    const query = `SELECT ${colunas} FROM ${_tabela} WHERE ${colunasCondicao};`;
+    if (Object.keys(_condicao).length > 0) {
+      const keysCondicao = Object.keys(_condicao).map((item) => `${item} = ?`);
+      const colunasCondicao = keysCondicao.join(" AND ");
+      const valuesCondicao = Object.values(_condicao);
+      query = `SELECT ${colunas} FROM ${_tabela} WHERE ${colunasCondicao};`;
+    } else {
+      query = `SELECT ${colunas} FROM ${_tabela};`;
+    }
 
     try {
-      const [rows, fields] = await conexao.execute(query, valuesCondicao);
-      if(rows.length == 0){
-        return new Error("Usuário incorreto ou inexistente.");
+      const [rows, fields] = await conexao.execute(
+        query,
+        Object.values(_condicao)
+      );
+      if (rows.length == 0) {
+        return new Error("Registro incorreto ou inexistente.");
       }
       return rows;
     } catch (error: any) {

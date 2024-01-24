@@ -2,7 +2,10 @@ import { loginModel, authenticateModel } from "../models/model.usuario";
 import { NextFunction, Request, Response } from "express";
 import IRequestAuthenticate from "../interfaces/IRequestAuthenticate";
 import IFileMulter from "../interfaces/IFileMulter";
-import { criarTipoFichaModel } from "../models/model.fichas";
+import {
+  criarTipoFichaModel,
+  consultarTipoFichaModel,
+} from "../models/model.fichas";
 const multer = require("multer");
 const uploadMiddleware = multer({ dest: "./uploads/" });
 const bcrypt = require("bcryptjs");
@@ -20,11 +23,16 @@ criarTipoFichaRoute.use(
     next: NextFunction
   ) => {
     try {
+      if(req.authenticate.permission < 5){
+        console.log(req.authenticate.permission);
+        return next(new Error("Usuário não tem permissão para executar a ação!"));
+      };
+
       const { nomeTipoFicha } = req.body;
       const file: IFileMulter = req.file;
 
       if (!file) return next(new Error("Nenhuma imagem enviada"));
-      if (!nomeTipoFicha || nomeTipoFicha.replaceAll(" ", "").length <= 4)
+      if (!nomeTipoFicha || nomeTipoFicha.replaceAll(" ", "").length <= 2)
         return next(new Error("Nome do tipo da ficha inválido"));
 
       const { mimetype, filename, originalname } = file;
@@ -43,14 +51,12 @@ criarTipoFichaRoute.use(
         nomeimagem: originalname,
         pathimagem: `${filename}.${extension}`,
         formato: extension,
-        nomeficha: nomeTipoFicha,
+        nometipoficha: nomeTipoFicha,
       });
 
       if (resposta instanceof Error) {
         fs.rmSync(`./uploads/${filename}.${extension}`);
-        return next(
-          new Error("Erro ao inserir o novo tipo de ficha no banco de dados.")
-        );
+        return next(new Error(resposta.message));
       }
 
       res.status(200).json({ message: "Tipo de ficha criada com sucesso" });
@@ -59,3 +65,32 @@ criarTipoFichaRoute.use(
     }
   }
 );
+
+export async function consultarTiposFichaRoute(
+  req: Request & IRequestAuthenticate,
+  res: Response,
+  next: NextFunction
+) {
+  if(req.authenticate.permission < 5){
+    return next(new Error("Usuário não tem permissão para executar a ação!"));
+  };
+
+  const resposta: any = await consultarTipoFichaModel();
+  if (resposta instanceof Error) {
+    return next(resposta);
+  }
+  const retorno: object[] = [];
+  resposta.forEach((item: object & any) => {
+    retorno.push({ nomeTipoFicha: item.NOMETIPOFICHA });
+  });
+
+  res.status(200).json(retorno);
+}
+
+export function criarNovaFichaRoute(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  return;
+}
