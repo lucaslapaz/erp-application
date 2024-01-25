@@ -1,6 +1,7 @@
 import {
   Avatar,
   Box,
+  Box as ContainerTopBar,
   Button,
   CircularProgress,
   Divider,
@@ -14,6 +15,29 @@ import MonitoraFichasLayout from "../Layouts/MonitoraFichasLayout";
 import ProdutosFicha from "../Components/ProdutosFicha";
 import MenuFerramentas from "../Components/MenuFerramentas";
 import { Navigate } from "react-router-dom";
+import styled from "@emotion/styled";
+
+const ContainerFichas = styled(Box)(({ theme }) => {
+  return {
+    display: "grid",
+    gridTemplateColumns: "auto",
+    gridTemplateRows: "auto 1fr",
+
+    borderBottom: ` 1px solid ${theme.palette.divider}`,
+    borderRight: ` 1px solid ${theme.palette.divider}`,
+  };
+});
+
+const InfoBar = styled(Box)(({ theme }) => {
+  return {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "start",
+    width: "100%",
+    padding: "20px",
+    alignItems: "center",
+  };
+});
 
 export default function MonitoraFichas() {
   const [index, setIndex] = useState(0);
@@ -75,19 +99,14 @@ export default function MonitoraFichas() {
   return (
     <>
       <MonitoraFichasLayout component="main">
-        <Box
+        <ContainerFichas
           sx={{
-            display: "grid",
-            gridTemplateColumns: "auto",
-            gridTemplateRows: "auto 1fr",
             gridColumn: "1 / 9",
             gridRow: "1 / 10",
-            borderBottom: (theme) => ` 1px solid ${theme.palette.divider}`,
-            borderRight: (theme) => ` 1px solid ${theme.palette.divider}`,
           }}
         >
-          <Box>
-            <Box
+          <ContainerTopBar>
+            <InfoBar
               sx={{
                 display: "flex",
                 flexDirection: "row",
@@ -106,7 +125,7 @@ export default function MonitoraFichas() {
               >
                 Sair
               </Button>
-            </Box>
+            </InfoBar>
             <Divider />
             <Tabs value={index} onChange={tabsHandler}>
               <Tab label="Mesas" />
@@ -115,11 +134,12 @@ export default function MonitoraFichas() {
               <Tab label="Delivery" />
             </Tabs>
             <Divider />
-          </Box>
+          </ContainerTopBar>
+
           <React.Fragment>
             <TabMesas indice={index} />
           </React.Fragment>
-        </Box>
+        </ContainerFichas>
 
         <ProdutosFicha
           variant="contained"

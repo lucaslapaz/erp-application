@@ -79,7 +79,8 @@ CREATE TABLE FICHAS (
     NUMERO INT NOT NULL,
     ID_TIPO INT NOT NULL,
     PRIMARY KEY (IDFICHA),
-    FOREIGN KEY (ID_TIPO) REFERENCES FICHAS_TIPO(IDTIPO)
+    FOREIGN KEY (ID_TIPO) REFERENCES FICHAS_TIPO(IDTIPO),
+    UNIQUE KEY `unique_numero_tipo` (NUMERO, ID_TIPO)
 );
 
 -------------------------------------------------------

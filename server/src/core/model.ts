@@ -2,11 +2,11 @@ const mysql = require("mysql2/promise");
 
 // Criando um pool de conexões
 const pool = mysql.createPool({
-  host: "localhost",
-  user: "root",
-  password: "#food#",
-  database: "erp_lapaz",
-  connectionLimit: 10,
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_DATABASE,
+  connectionLimit: parseInt(process.env.DB_CONNECTION_LIMIT as string),
 });
 
 // Função para obter uma conexão do pool

@@ -115,15 +115,6 @@ export default function Login() {
           >
             Entrar
           </Button>
-          <Snackbar
-            open={notifyStatus}
-            autoHideDuration={5000}
-            onClose={closeSnackBar}
-          >
-            <Alert severity="error" variant="filled" sx={{ width: "100%" }}>
-              Usuário incorreto
-            </Alert>
-          </Snackbar>
 
           <Notificacao
             open={notifyStatus}
