@@ -9,13 +9,14 @@ import {
   Tabs,
   Typography,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import TabMesas from "../Components/TabMesas";
 import MonitoraFichasLayout from "../Layouts/MonitoraFichasLayout";
 import ProdutosFicha from "../Components/ProdutosFicha";
 import MenuFerramentas from "../Components/MenuFerramentas";
-import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import styled from "@emotion/styled";
+import { UserContext } from "../Contexts/UserContext";
 
 const ContainerFichas = styled(Box)(({ theme }) => {
   return {
@@ -41,8 +42,9 @@ const InfoBar = styled(Box)(({ theme }) => {
 
 export default function MonitoraFichas() {
   const [index, setIndex] = useState(0);
-  const [autenticando, setAutenticando] = useState(true);
-  const [redirecionarLogin, setRedirecionarLogin] = useState(false);
+  const navigate = useNavigate();
+  const { logged, authenticate } = useContext(UserContext);
+  const [showContent, setShowContent] = useState(false);
 
   function tabsHandler(event, index) {
     setIndex(index);
@@ -53,30 +55,21 @@ export default function MonitoraFichas() {
       credentials: "include",
       method: "POST",
     }).then(() => {
-      setRedirecionarLogin(true);
+      navigate("/login");
     });
-  }
-
-  async function authenticate() {
-    const resposta = await fetch("http://localhost:5000/api/authenticate", {
-      credentials: "include",
-      method: "POST",
-    });
-    if (resposta.status === 200) {
-      setTimeout(() => {
-        setAutenticando(false);
-      }, 2000);
-    } else {
-      setAutenticando(false);
-      setRedirecionarLogin(true);
-    }
   }
 
   useEffect(() => {
-    authenticate();
+    authenticate(setShowContent);
   }, []);
 
-  if (autenticando) {
+  useEffect(() => {
+    if(showContent && !logged){
+        navigate('/login');
+    }
+  }, [showContent]);
+
+  if (!showContent) {
     return (
       <Box
         sx={{
@@ -90,10 +83,6 @@ export default function MonitoraFichas() {
         <CircularProgress />
       </Box>
     );
-  }
-
-  if (redirecionarLogin) {
-    return <Navigate to={"/login"} />;
   }
 
   return (

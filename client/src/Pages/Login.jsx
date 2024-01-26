@@ -1,14 +1,12 @@
 import {
-  Alert,
   Box,
   Button,
   Divider,
-  Snackbar,
   Stack,
   TextField,
   Typography,
 } from "@mui/material";
-import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import Notificacao from "../Components/Notificacao";
 import ErrorCustom from "../Objects/ErrorCustom";
@@ -18,9 +16,9 @@ export default function Login() {
   const [username, setUsername] = useState("admin");
   const [password, setPassword] = useState("lapaz");
   const [requestSend, setRequestSend] = useState(false);
-  const [redirect, setRedirect] = useState(false);
   const [notifyStatus, setNotifyStatus] = useState(false);
   const [notifyMessage, setNotifyMessage] = useState();
+  const navigate = useNavigate();
 
   async function loginHandler() {
     let user = username.replaceAll(" ", "");
@@ -40,7 +38,7 @@ export default function Login() {
           }),
         });
         if (resposta.status === 200) {
-          setRedirect(true);
+          navigate("/monitora-fichas");
         } else {
           let message = await resposta.json();
           throw new ErrorCustom(message.message);
@@ -62,10 +60,6 @@ export default function Login() {
 
   function closeSnackBar() {
     setNotifyStatus(false);
-  }
-
-  if (redirect) {
-    return <Navigate to={"/monitora-fichas"} />;
   }
 
   return (

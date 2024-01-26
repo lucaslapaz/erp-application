@@ -81,10 +81,6 @@ export async function consultarTiposFichaRoute(
   if (resposta instanceof Error) {
     return next(resposta);
   }
-  // const retorno: object[] = [];
-  // resposta.forEach((item: object & any) => {
-  //   retorno.push({ nomeTipoFicha: item.NOMETIPOFICHA });
-  // });
 
   res.status(200).json(resposta);
 }
@@ -129,4 +125,19 @@ export async function criarFichaRoute(
 
   res.status(200).send(resposta);
   return;
+}
+
+export async function consultarTiposExistentesRoute(
+  req: Request & IRequestAuthenticate,
+  res: Response,
+  next: NextFunction
+) {
+  if(req.authenticate.permission <= 5){
+    return next(new Error('Usuário não possui permissão para acessar o conteúdo.'));
+  }
+  res.status(200).json([
+    { IDTIPO: 1, NOMETIPOFICHA: "Mesas" },
+    { IDTIPO: 2, NOMETIPOFICHA: "Comandas" },
+    { IDTIPO: 1, NOMETIPOFICHA: "Cartões" }
+  ]);
 }

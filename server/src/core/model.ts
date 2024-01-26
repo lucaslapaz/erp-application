@@ -15,75 +15,55 @@ async function obterConexaoDoPool() {
   return connection;
 }
 
-interface Dados {
+interface Data {
   [key: string]: string;
-}
-
-function extrairDados(dados: object) {
-  const keys = Object.keys(dados);
-  const colunas = keys.join(", ");
-  const params = keys.map(() => "?").join(", ");
-  const values: string[] = [];
-
-  for (let val in dados) {
-    values.push((dados as Dados)[val]);
-  }
-  return [keys, colunas, params, values];
 }
 
 namespace model {
   /**
    *
-   * @param {string} _tabela Nome da tabela
-   * @param {object} _dados Objeto com os dados a serem inseridos
+   * @param {string} table Nome da tabela
+   * @param {object} data Objeto com os dados a serem inseridos
    * @returns Retorna dados sobre a inserção na tabela
    */
-  export async function DBCreate(_tabela: string, _dados: object) {
-    if (!_tabela || !_dados) return new Error("Argumentos faltando!");
+  export async function DBCreate(table: string, data: object) {
+    if (!table || !data) return new Error("Argumentos faltando!");
 
-    const conexao = await obterConexaoDoPool();
+    const connection = await obterConexaoDoPool();
 
-    const colunas = Object.keys(_dados);
-    const colunasString = colunas.join(", ");
-    const params = colunas.map((item) => `?`).join(", ");
-    const values = Object.values(_dados);
+    const columns = Object.keys(data);
+    const columnsString = columns.join(", ");
+    const values = [Object.values(data)];
 
-    const query: string = `INSERT INTO ${_tabela} (${colunasString}) values (${params});`;
+    const query: string = `INSERT INTO ${table} (${columnsString}) VALUES ?`;
 
     try {
-      return await conexao.execute(query, values);
+      return await connection.query(query, [values]);
     } catch (error: any) {
       return error;
     } finally {
-      conexao.release(); // Liberando a conexão de volta para o pool
+      connection.release(); // Liberando a conexão de volta para o pool
     }
   }
 
-  export async function DBCreateMultiple(_tabela: string, _dados: object[]) {
-    if (!_tabela || !_dados || _dados.length <= 0)
+  export async function DBCreateMultiple(table: string, data: object[]) {
+    if (!table || !data || data.length <= 0)
       return new Error("Argumentos faltando!");
 
-    const conexao = await obterConexaoDoPool();
+    const connection = await obterConexaoDoPool();
 
-    const colunas = Object.keys(_dados[0]);
-    const colunasString = colunas.join(", ");
-    const params = colunas.map((item) => `?`).join(", ");
+    const columns = Object.keys(data[0]);
+    const columnsString = columns.join(", ");
+    const values: any[] = data.map((item) => Object.values(item));
 
-    const values: any[] = [];
-
-    _dados.forEach((item) => {
-      values.push(Object.values(item));
-    });
-
-
-    const query: string = `INSERT INTO ${_tabela} (${colunasString}) values ?`;
+    const query: string = `INSERT INTO ${table} (${columnsString}) VALUES ?`;
 
     try {
-      return await conexao.query(query, [values]);
+      return await connection.query(query, [values]);
     } catch (error: any) {
       return error;
     } finally {
-      conexao.release(); // Liberando a conexão de volta para o pool
+      connection.release(); // Liberando a conexão de volta para o pool
     }
   }
 

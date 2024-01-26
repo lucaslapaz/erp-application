@@ -8,6 +8,7 @@ import {
   criarTipoFichaRoute,
   consultarTiposFichaRoute,
   criarFichaRoute,
+  consultarTiposExistentesRoute,
 } from "../routes/route.fichas";
 import validateToken from "../core/validateToken";
 
@@ -16,9 +17,11 @@ const router = require("express").Router();
 router.post("/login", loginRoute);
 router.post("/logout", logoutRoute);
 router.post("/authenticate", authenticateRoute);
+
 router.post("/criar-tipo-ficha", validateToken, criarTipoFichaRoute);
 router.get("/consultar-tipos-ficha", validateToken, consultarTiposFichaRoute);
 router.post("/criar-ficha", validateToken, criarFichaRoute);
+router.get("/consultar-tipos-existentes", validateToken, consultarTiposExistentesRoute)
 
 
 router.get(
