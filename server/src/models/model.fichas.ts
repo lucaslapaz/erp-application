@@ -1,4 +1,5 @@
 import model from "../core/model";
+import ErrorCustom from "../objects/ErrorCustom";
 
 export async function criarTipoFichaModel(infoTipoFicha: object) {
   const resposta: any = await model.DBCreate("FICHAS_TIPO", infoTipoFicha);
@@ -15,21 +16,27 @@ export async function criarTipoFichaModel(infoTipoFicha: object) {
   }
 }
 
-
 export async function consultarTipoFichaModel() {
-  const resposta: any = await model.DbRead('FICHAS_TIPO', ['IDTIPO', 'PATHIMAGEM', 'FORMATO', 'NOMETIPOFICHA']);
+  const resposta: any = await model.DbRead("FICHAS_TIPO", [
+    "IDTIPO",
+    "PATHIMAGEM",
+    "FORMATO",
+    "NOMETIPOFICHA",
+  ]);
   return resposta;
 }
 
-
-export async function criarFichaModel(idtipo:number, inicio:number, final:number) {
-
-  let infoFicha:object[] = [];
-  for(let num = inicio; num <= final; num++){
+export async function criarFichaModel(
+  idtipo: number,
+  inicio: number,
+  final: number
+) {
+  let infoFicha: object[] = [];
+  for (let num = inicio; num <= final; num++) {
     infoFicha.push({
       ID_TIPO: idtipo,
-      NUMERO: num
-    })
+      NUMERO: num,
+    });
   }
 
   const resposta: any = await model.DBCreateMultiple("FICHAS", infoFicha);
@@ -47,4 +54,18 @@ export async function criarFichaModel(idtipo:number, inicio:number, final:number
 
     console.log(resposta);
   }
+}
+
+export async function consultarFichasModel(nometipo: string) {
+  const resposta: any = await model.DbRead(
+    "FICHAS_VIEW",
+    ["IDFICHA, NUMERO, NOMETIPOFICHA"],
+    { NOMETIPOFICHA: nometipo }
+  );
+
+  if (resposta instanceof Error) {
+    return new Error("Falha ao consultar fichas.");
+  }
+
+  return resposta;
 }

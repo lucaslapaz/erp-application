@@ -8,7 +8,7 @@ import {
   criarTipoFichaRoute,
   consultarTiposFichaRoute,
   criarFichaRoute,
-  consultarTiposExistentesRoute,
+  consultarFichas,
 } from "../routes/route.fichas";
 import validateToken from "../core/validateToken";
 
@@ -21,8 +21,7 @@ router.post("/authenticate", authenticateRoute);
 router.post("/criar-tipo-ficha", validateToken, criarTipoFichaRoute);
 router.get("/consultar-tipos-ficha", validateToken, consultarTiposFichaRoute);
 router.post("/criar-ficha", validateToken, criarFichaRoute);
-router.get("/consultar-tipos-existentes", validateToken, consultarTiposExistentesRoute)
-
+router.get("/consultar-fichas/:tipoficha", validateToken, consultarFichas);
 
 router.get(
   "/teste-erro",

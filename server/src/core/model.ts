@@ -1,3 +1,5 @@
+import ErrorCustom from "../objects/ErrorCustom";
+
 const mysql = require("mysql2/promise");
 
 // Criando um pool de conexões
@@ -103,7 +105,7 @@ namespace model {
         Object.values(_condicao)
       );
       if (rows.length == 0) {
-        return new Error("Registro incorreto ou inexistente.");
+        return new ErrorCustom("Registro incorreto ou inexistente.");
       }
       return rows;
     } catch (error: any) {

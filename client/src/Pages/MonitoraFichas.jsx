@@ -5,25 +5,22 @@ import {
   Button,
   CircularProgress,
   Divider,
-  Tab,
-  Tabs,
   Typography,
 } from "@mui/material";
 import React, { useContext, useEffect, useRef, useState } from "react";
-import TabMesas from "../Components/TabMesas";
 import MonitoraFichasLayout from "../Layouts/MonitoraFichasLayout";
 import ProdutosFicha from "../Components/ProdutosFicha";
 import MenuFerramentas from "../Components/MenuFerramentas";
 import { useNavigate } from "react-router-dom";
 import styled from "@emotion/styled";
 import { UserContext } from "../Contexts/UserContext";
+import GuiaFichas from "../Components/GuiaFichas";
 
 const ContainerFichas = styled(Box)(({ theme }) => {
   return {
     display: "grid",
     gridTemplateColumns: "auto",
     gridTemplateRows: "auto 1fr",
-
     borderBottom: ` 1px solid ${theme.palette.divider}`,
     borderRight: ` 1px solid ${theme.palette.divider}`,
   };
@@ -41,14 +38,10 @@ const InfoBar = styled(Box)(({ theme }) => {
 });
 
 export default function MonitoraFichas() {
-  const [index, setIndex] = useState(0);
-  const navigate = useNavigate();
   const { logged, authenticate } = useContext(UserContext);
   const [showContent, setShowContent] = useState(false);
 
-  function tabsHandler(event, index) {
-    setIndex(index);
-  }
+  const navigate = useNavigate();
 
   async function logoutHandler() {
     await fetch("http://localhost:5000/api/logout", {
@@ -64,8 +57,12 @@ export default function MonitoraFichas() {
   }, []);
 
   useEffect(() => {
-    if(showContent && !logged){
-        navigate('/login');
+    if (showContent) {
+      if (!logged) {
+        navigate("/login");
+      } else {
+        //consultarTiposFicha();
+      }
     }
   }, [showContent]);
 
@@ -94,40 +91,28 @@ export default function MonitoraFichas() {
             gridRow: "1 / 10",
           }}
         >
-          <ContainerTopBar>
-            <InfoBar
-              sx={{
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "start",
-                width: "100%",
-                padding: "20px",
-                alignItems: "center",
-              }}
+          <InfoBar
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "start",
+              width: "100%",
+              padding: "20px",
+              alignItems: "center",
+              borderBottom: (theme) => ` 1px solid ${theme.palette.divider}`,
+            }}
+          >
+            <Avatar sx={{ marginRight: "10px" }}>L</Avatar>
+            <Typography variant="h5">Usuário: Lucas</Typography>
+            <Button
+              sx={{ marginLeft: "auto" }}
+              variant="outlined"
+              onClick={logoutHandler}
             >
-              <Avatar sx={{ marginRight: "10px" }}>L</Avatar>
-              <Typography variant="h5">Usuário: Lucas</Typography>
-              <Button
-                sx={{ marginLeft: "auto" }}
-                variant="outlined"
-                onClick={logoutHandler}
-              >
-                Sair
-              </Button>
-            </InfoBar>
-            <Divider />
-            <Tabs value={index} onChange={tabsHandler}>
-              <Tab label="Mesas" />
-              <Tab label="Comandas" />
-              <Tab label="Fichas" />
-              <Tab label="Delivery" />
-            </Tabs>
-            <Divider />
-          </ContainerTopBar>
-
-          <React.Fragment>
-            <TabMesas indice={index} />
-          </React.Fragment>
+              Sair
+            </Button>
+          </InfoBar>
+          <GuiaFichas />
         </ContainerFichas>
 
         <ProdutosFicha

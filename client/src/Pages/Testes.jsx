@@ -5,7 +5,7 @@ import io from "socket.io-client";
 let ENDPOINT = "localhost:5000";
 let socket;
 
-export default function Teste() {
+export default function Testes() {
 
   const conectar = () => {
     if(socket) socket.disconnect();

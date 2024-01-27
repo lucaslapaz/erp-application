@@ -1,26 +1,22 @@
 import { Card, CardContent, Grid, SvgIcon, Typography } from "@mui/material";
+import { useState } from "react";
 
-
-
-export default function Ficha({ selected, numero, image, func}) {
+export default function Ficha({ numero, image }) {
+  const [idFicha, setIdFicha] = useState(null);
+  const [_numero, _setNumero] = useState(null);
+  const [nomeTipoFicha, setNomeTipoFicha] = useState(null);
 
   let estilo = {
-    ':hover': {
-      transform: 'translate(-1px, -1px)'
+    ":hover": {
+      transform: "translate(-1px, -1px)",
     },
-    ':active': {
-      transform: 'translate(1px, 1px)'
-    }
+    ":active": {
+      transform: "translate(1px, 1px)",
+    },
   };
 
-  if(selected){
-    estilo = {...estilo, 
-      backgroundColor: (theme )=>theme.palette.primary.main
-    }
-  }
-
   return (
-    <Grid item width={120} height={120} onClick={() => func(numero)}>
+    <Grid item width={120} height={120}>
       <Card
         // variant="elevation"
         variant="outlined"
@@ -32,13 +28,17 @@ export default function Ficha({ selected, numero, image, func}) {
           justifyContent: "center",
           alignContent: "center",
           alignItems: "center",
-          ...estilo
+          ...estilo,
         }}
       >
         <CardContent>
-          <Typography variant="h6" textAlign="center" sx={{
-            userSelect: 'none'
-          }}>
+          <Typography
+            variant="h6"
+            textAlign="center"
+            sx={{
+              userSelect: "none",
+            }}
+          >
             {numero}
           </Typography>
           <SvgIcon

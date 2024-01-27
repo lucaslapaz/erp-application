@@ -6,6 +6,7 @@ import {
   criarTipoFichaModel,
   consultarTipoFichaModel,
   criarFichaModel,
+  consultarFichasModel,
 } from "../models/model.fichas";
 const multer = require("multer");
 const uploadMiddleware = multer({ dest: "./uploads/" });
@@ -127,17 +128,29 @@ export async function criarFichaRoute(
   return;
 }
 
-export async function consultarTiposExistentesRoute(
+export async function consultarFichas(
   req: Request & IRequestAuthenticate,
   res: Response,
   next: NextFunction
 ) {
-  if(req.authenticate.permission <= 5){
-    return next(new Error('Usuário não possui permissão para acessar o conteúdo.'));
+  if (req.authenticate.permission < 5) {
+    return next(new Error("Usuário não tem permissão para executar a ação!"));
   }
-  res.status(200).json([
-    { IDTIPO: 1, NOMETIPOFICHA: "Mesas" },
-    { IDTIPO: 2, NOMETIPOFICHA: "Comandas" },
-    { IDTIPO: 1, NOMETIPOFICHA: "Cartões" }
-  ]);
+
+  let { tipoficha } = req.params;
+  tipoficha = tipoficha.trim();
+
+  if (tipoficha) {
+    const resposta = await consultarFichasModel(tipoficha);
+    if (resposta instanceof Error) {
+      return next(resposta);
+    }
+    return res.status(200).json(resposta);
+  } else {
+    return next(
+      new Error("Falha ao consultar fichas. Erro no parâmetro tipoficha.")
+    );
+  }
+
+  res.sendStatus(200);
 }

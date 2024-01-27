@@ -7,7 +7,6 @@ export const UserContext = createContext({});
 export const UserContextProvider = function ({ children }) {
   const [userName, setUserName] = useState("");
   let [logged, setLogged] = useState(false);
-  let [authenticating, setAuthenticating] = useState(true);
 
   async function authenticate(setShowContent = null) {
     try {
@@ -28,7 +27,6 @@ export const UserContextProvider = function ({ children }) {
       setLogged(false);
       console.log(message);
     } finally {
-      setAuthenticating(false);
       setShowContent(true);
     }
   }
@@ -37,11 +35,8 @@ export const UserContextProvider = function ({ children }) {
     <UserContext.Provider
       value={{
         userName,
-        setUserName,
         logged,
-        setLogged,
         authenticate,
-        authenticating,
       }}
     >
       {children}
